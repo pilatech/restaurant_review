@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <title>Welcome to the Restaurant Review</title>
+</head>
+<body class="has-navbar-fixed-top">
+    <nav class="navbar is-fixed-top is-primary" role="navigation" aria-label="main navigation">
+     <div class="container">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            REREV
+          </a>
+          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="/restaurants/new">
+              Add Restaurant
+            </a>
+            <a class="navbar-item">
+                About Us
+              </a>
+              <a class="navbar-item">
+                Contact Us
+              </a>
+            </div>
+          </div>
+      
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-primary">
+                  <strong>Sign up</strong>
+                </a>
+                <a class="button is-light">
+                  Log in
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</nav>
+      <!-- navbar ends here -->
+<div class="container mt-5">
+   <%- body -%>
+</div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<%- layout('template') -%>
+    <h1>Add New Restaurant</h1>
+    <form autocomplete="off" action="/restaurants" method="POST">
+        <div>
+            <label for="title">Title:</label><br>
+            <input type="text" name="title" id="title">
+        </div>
+        <div>
+            <label for="location">Location:</label><br>
+            <input type="text" name="location" id="location">
+        </div>
+        <div>
+            <label for="image">Image: </label><br>
+            <input type="text" name="image" id="image">
+        </div>
+        <div>
+            <label for="description">Description: </label><br>
+            <textarea name="description" id="description"></textarea>
+        </div>
+        <button class="button is-primary">Add Restaurant</button>
+    </form>

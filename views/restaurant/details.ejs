@@ -1,0 +1,35 @@
+<%- layout('template') -%>
+    <h1><strong>Title: </strong><%= restaurant.title %></h1>
+    <img src="<%= restaurant.image || `https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cmVzdGF1cmFudHxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60`%>"<br>
+    <p><strong>Location: </strong><%= restaurant.location %></p>
+    <p><strong>Description: </strong> <%= restaurant.description %></p>
+    <p><a href="/restaurants/<%= restaurant._id %>/edit">Edit</a></p>
+    <form action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST"><button class="button is-primary">Delete</button></form>
+    <a href="/restaurants">Back to all Restaurants</a>
+
+    <hr>
+    <% if(restaurant.reviews.length){%>
+        <% for(let review of restaurant.reviews){ %>
+            <p><strong>Joe Schmoe: </strong><%= review.comment %> | <%=  review.rating %>/5
+            </p>
+            <form class="is-inline"  method="POST" action="/restaurants/<%= restaurant._id %>/reviews/<%= review._id %>?_method=DELETE"><button class="button is-danger is-small">Delete</button></form>
+            <br>
+            <br>
+       <% } %>
+    <% } else { %>
+        <p><i>No Reviews</i></p>
+    <% } %>
+    <br>
+    <h2>Leave a review</h2>
+    <form action="/restaurants/<%= restaurant._id %>/reviews" method="POST">
+        <div>
+            <label for="comment">Comment: </label><br>
+            <textarea name="comment" id="comment"></textarea>
+        </div>
+        <div>
+            <label for="description">Rating: </label><br>
+            <input type="range" name="rating" id="rating" min="1" max="5">
+        </div>
+        <button>Submit</button>
+    </form>
+
