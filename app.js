@@ -6,6 +6,9 @@ const ejsMate = require('ejs-mate')
 
 const Restaurant = require('./models/restaurant')
 const Review = require('./models/review')
+const AppError = require('./helpers/AppError')
+const catchAsync = require('./helpers/catchAsync')
+const { restaurantSchema, reviewSchema } = require('./validSchemas')
 
 mongooseConnect()
 .then(console.log('Connected to Database'))
@@ -14,6 +17,26 @@ mongooseConnect()
 async function mongooseConnect() {
   await mongoose.connect('mongodb://localhost:27017/restaurants_reviews');
 }
+
+function validateRestaurant(req, res, next){
+ const { error } = restaurantSchema.validate(req.body)
+ if(error){
+   const msg = error.details.map(detail => detail.message).join(', ')
+   throw new AppError(msg, 400)
+ } else {
+   next()
+ }
+}
+
+function validateReview(req, res, next){
+  const { error } = reviewSchema.validate(req.body)
+  if(error){
+    const msg = error.details.map(detail => detail.message).join(', ')
+    throw new AppError(msg, 400)
+  } else {
+    next()
+  }
+ }
 
 const app = express()
 
@@ -29,46 +52,49 @@ app.get('/', async (req, res) => {
     res.redirect('/restaurants')
 })
 
-app.get('/restaurants', async (req, res) => {
+app.get('/restaurants', catchAsync(async (req, res) => {
   const restaurants = await Restaurant.find({})
   res.render('restaurant/index', { restaurants })
-})
+}))
 
-app.post('/restaurants', async (req, res) => {
+app.post('/restaurants', validateRestaurant, catchAsync(async (req, res) => {
   const newRestaurant = new Restaurant(req.body)
   const restaurant = await newRestaurant.save()
   res.redirect(`/restaurants/${restaurant._id}`)
-})
+}))
 
 app.get('/restaurants/new', (req, res) => {
   res.render('restaurant/new')
 })
 
-app.get('/restaurants/:id', async (req, res) => {
+app.get('/restaurants/:id', catchAsync(async (req, res) => {
   const { id } = req.params
   const restaurant = await Restaurant.findById(id).populate('reviews')
+  if(!restaurant){
+    return new AppError('Restaurant Not Found', 404)
+  }
   res.render('restaurant/details', { restaurant })
-})
+}))
 
-app.patch('/restaurants/:id', async (req, res) => {
+app.patch('/restaurants/:id', validateRestaurant, catchAsync(async (req, res) => {
   const { id } = req.params
   const updatedRestaurant = await Restaurant.findByIdAndUpdate(id, req.body)
   res.redirect(`/restaurants/${updatedRestaurant._id}`)
-})
+}))
 
-app.delete('/restaurants/:id', async (req, res) => {
+app.delete('/restaurants/:id', catchAsync(async (req, res) => {
   const { id } = req.params
   await Restaurant.findByIdAndDelete(id)
   res.redirect('/restaurants')
-})
+}))
 
-app.get('/restaurants/:id/edit', async (req, res) => {
+app.get('/restaurants/:id/edit', catchAsync(async (req, res) => {
   const { id } = req.params
   const restaurant = await Restaurant.findById(id)
   res.render('restaurant/edit', { restaurant })
-})
+}))
 
-app.post('/restaurants/:id/reviews', async (req, res) => {
+app.post('/restaurants/:id/reviews', validateReview, catchAsync(async (req, res) => {
   const { id } = req.params
   const restaurant = await Restaurant.findById(id)
   const review = new Review(req.body)
@@ -76,14 +102,23 @@ app.post('/restaurants/:id/reviews', async (req, res) => {
   await restaurant.save()
   await review.save()
   res.redirect(`/restaurants/${restaurant._id}`)
-})
+}))
 
-
-app.delete('/restaurants/:id/reviews/:reviewId', async (req, res) => {
+app.delete('/restaurants/:id/reviews/:reviewId', catchAsync(async (req, res) => {
   const { id, reviewId } = req.params
   await Restaurant.findByIdAndUpdate(id, {$pull: { reviews: reviewId } })
   await Review.findByIdAndDelete(id)
   res.redirect(`/restaurants/${id}`)
+}))
+
+app.use((req, res) => {
+  throw new AppError('Page Not Found!', 404)
+})
+
+app.use((err, req, res, next) => {
+  if(!err.message) err.message = "Something in not right!"
+  if(!err.status) err.status = 500
+  res.status(err.status).render('error', { err })
 })
 
 app.listen(3000, () => {
