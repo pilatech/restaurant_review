@@ -1,10 +1,10 @@
 const Joi = require('joi')
 
 module.exports.restaurantSchema = Joi.object({
-    title: Joi.string().required(),
+    title: Joi.string(),
     description: Joi.string(),
     image: Joi.any().optional(),
-    location: Joi.string().required(),
+    location: Joi.string(),
     reviews: Joi.array()
 })
 
