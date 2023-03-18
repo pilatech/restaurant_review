@@ -1,8 +1,0 @@
-<% layout('template') -%>
-    <h1>Restaurant Review Welcomes You</h1>
-    <a class="button is-light mt-2 mb-2" href="/restaurants/new">+ Add Restaurant</a>
-    <ul>
-        <% for(let restaurant of restaurants){ %>
-            <li><a href="/restaurants/<%= restaurant._id %>"><%= restaurant.title %></a></li>
-        <%}%>
-    </ul>
